@@ -1,48 +1,54 @@
+"""FaceDetect holds methods to detect the face from a picture or video stream."""
+
 import cv2
 import imutils
 import numpy as np
 
-# Contains methods to extract the face
-faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-faces = [] # Hacky, should make into a class or soemthing instead later
 
-# Public method, lets you use whatever implmentation you want. 
-def getNewFrame(img, timeStep):
-	if timeStep % 20 == 0:
-		_get_img_with_haar(img)
-		return _draw_faces(img)
-	return _draw_faces(img)
+class FaceDetect():
+	def __init__(self):
+		self.faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+		self.faces = [] # faces in form of x, y, width, height
+		self.shapeOfLastDetectedImg = (0, 0)
 
-def _draw_faces(img):
-	global faces
-	for face in faces:
-		x,y,w,h = face
-		img[y: y + h, x] = [255, 255, 255] # Left off here, need to draw the actual bounding boxes. 
-		img[y: y + h, x + w] = [255, 255, 255] # Left off here, need to draw the actual bounding boxes. 
-		img[y, x:x + w] = [255, 255, 255]
-		img[y + h, x:x + w] = [255, 255, 255]
-	return img
+	# Public method, lets you use whatever implmentation you want. 
+	def getNewFrame(self, img, timeStep):
+		"""Gets the new frame to show on the screen. Called by external classes, etc."""
+		# Always run detection of img's shape changed. Otherwise we might get
+		# an index out of bounds exception for when the old faces run off the edges 
+			# of the new frame.
+		if timeStep % 20 == 0 or np.array(img).shape != self.shapeOfLastDetectedImg:
+			self._get_faces_with_haar(img)
+			return self._draw_faces(img)
+		return self._draw_faces(img)
 
-def _get_img_with_haar(img):
-	global faces 
-	img = np.array(img)
-	faces = faceCascade.detectMultiScale(img, minNeighbors=3, minSize=(int(img.shape[0]/10), int(img.shape[0]/10)))
-	if len(faces) > 1:
+	def _draw_faces(self, img):
+		"""Draws a white box for every face in the self.faces array"""
+		if self.faces is None:
+			return img
+		for face in self.faces:
+			x,y,w,h = face
+			img[y: y + h, x] = [255, 255, 255] # Left off here, need to draw the actual bounding boxes. 
+			img[y: y + h, x + w] = [255, 255, 255] # Left off here, need to draw the actual bounding boxes. 
+			img[y, x:x + w] = [255, 255, 255]
+			img[y + h, x:x + w] = [255, 255, 255]
+		return img
+
+	def _get_faces_with_haar(self, img):
+		"""Uses haar cascades to detect faces and save them in the self.faces array"""
+		if img is None:
+			return 
+
+		img = np.array(img)
+
+		# Detect faces
+		self.faces = self.faceCascade.detectMultiScale(img, minNeighbors=3, minSize=(int(img.shape[0]/10), int(img.shape[0]/10)))
+		self.shapeOfLastDetectedImg = img.shape
+
+		# Print so we know what is happening
+		if len(self.faces) > 1:
 			print("faces greater than 1 ")
-	if len(faces) != 0:
-		x,y,w,h = faces[0]
-		# maybe do something here? TODO
-		#onlyFaceImg = img[y:y + h, x:x + w]
-	else:
-		x = 0; y = 0; h, w = img.shape[:2]
-		#onlyFaceImg = img
-		print("no face found ")
-	# draw the x, y, w, h for all bounding boxes found
-	# for face in faces:
-	# 	x,y,w,h = face
-	# 	img[y: y + h, x] = [255, 255, 255] # Left off here, need to draw the actual bounding boxes. 
-	# 	img[y: y + h, x + w] = [255, 255, 255] # Left off here, need to draw the actual bounding boxes. 
-	# 	img[y, x:x + w] = [255, 255, 255]
-	# 	img[y + h, x:x + w] = [255, 255, 255]
-	# return img
+		elif len(self.faces) == 0:
+			print("no face found ")
+
 

@@ -7,8 +7,6 @@ Note: To get this code to work, you'll have to
 force your browser to accept the http address as a "safe"
 address.
 
-Playing card resource:
-http://acbl.mybigcommerce.com/52-playing-cards/
 """
 
 import argparse
@@ -26,8 +24,7 @@ from av import VideoFrame
 from aiortc import MediaStreamTrack, RTCPeerConnection, RTCSessionDescription
 from aiortc.contrib.media import MediaBlackhole, MediaPlayer, MediaRecorder, MediaRelay
 
-#from filter import * # own py file that contains filter code
-from face_detect import *
+from face_detect import * # own py file that contains face detection code
 
 ROOT = os.path.dirname(__file__)
 
@@ -35,10 +32,7 @@ logger = logging.getLogger("pc")
 pcs = set()
 relay = MediaRelay()
 
-# added stuff:  
-from fastai import *
-from fastai.vision.all import *
-#filter = Filter() # create a filter instance, and load the learner.
+#face_detect = FaceDetect() # create a face detection instance
 
 class VideoTransformTrack(MediaStreamTrack):
     """
@@ -51,6 +45,7 @@ class VideoTransformTrack(MediaStreamTrack):
         self.track = track
         self.transform = "face-detect"#transform # change to always be face-detect
         self.timeStep = 0 # added
+        self.face_detect = FaceDetect()  # create a face detection instance
 
     async def recv(self):
         frame = await self.track.recv()
@@ -117,7 +112,7 @@ class VideoTransformTrack(MediaStreamTrack):
         #     return new_frame
         elif self.transform == "face-detect": # added
             img = frame.to_ndarray(format="rgb24")       
-            img = getNewFrame(img, self.timeStep) # maybe take out times tep
+            img = self.face_detect.getNewFrame(img, self.timeStep) # maybe take out times tep
             # rebuild a VideoFrame, preserving timing information
             new_frame = VideoFrame.from_ndarray(img, format="rgb24")
             new_frame.pts = frame.pts
