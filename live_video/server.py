@@ -100,16 +100,7 @@ class VideoTransformTrack(MediaStreamTrack):
             new_frame.pts = frame.pts
             new_frame.time_base = frame.time_base
             return new_frame
-        # elif self.transform == "pup": # added
 
-        #     img = frame.to_ndarray(format="rgb24")       
-        #     img = filter.applyFilter(img, self.timeStep)
-        #     # rebuild a VideoFrame, preserving timing information
-        #     new_frame = VideoFrame.from_ndarray(img, format="rgb24")
-        #     new_frame.pts = frame.pts
-        #     new_frame.time_base = frame.time_base
-        #     self.timeStep += 1
-        #     return new_frame
         elif self.transform == "face-detect": # added
             img = frame.to_ndarray(format="rgb24")       
             img = self.face_detect.getNewFrame(img, self.timeStep) # maybe take out times tep

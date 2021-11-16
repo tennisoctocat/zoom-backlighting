@@ -1,7 +1,6 @@
 """FaceDetect holds methods to detect the face from a picture or video stream."""
 
 import cv2
-import imutils
 import numpy as np
 
 
