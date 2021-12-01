@@ -24,7 +24,8 @@ from av import VideoFrame
 from aiortc import MediaStreamTrack, RTCPeerConnection, RTCSessionDescription
 from aiortc.contrib.media import MediaBlackhole, MediaPlayer, MediaRecorder, MediaRelay
 
-from face_detect import * # own py file that contains face detection code
+#from face_detect import * # own py file that contains face detection code
+from process_frame import *
 
 ROOT = os.path.dirname(__file__)
 
@@ -43,9 +44,10 @@ class VideoTransformTrack(MediaStreamTrack):
     def __init__(self, track, transform):
         super().__init__()  # don't forget this!
         self.track = track
-        self.transform = "face-detect"#transform # change to always be face-detect
+        self.transform = "process-frame"#transform # change to always be face-detect
         self.timeStep = 0 # added
-        self.face_detect = FaceDetect()  # create a face detection instance
+        #self.face_detect = FaceDetect()  # create a face detection instance
+        self.frame_processor = FrameProcessor()
 
     async def recv(self):
         frame = await self.track.recv()
@@ -101,9 +103,9 @@ class VideoTransformTrack(MediaStreamTrack):
             new_frame.time_base = frame.time_base
             return new_frame
 
-        elif self.transform == "face-detect": # added
+        elif self.transform == "process-frame": # added
             img = frame.to_ndarray(format="rgb24")       
-            img = self.face_detect.getNewFrame(img, self.timeStep) # maybe take out times tep
+            img = self.frame_processor.getNewFrame(img, self.timeStep) # maybe take out times tep
             # rebuild a VideoFrame, preserving timing information
             new_frame = VideoFrame.from_ndarray(img, format="rgb24")
             new_frame.pts = frame.pts
