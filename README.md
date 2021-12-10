@@ -1,7 +1,7 @@
 # Reducing Zoom Backlighting
 ## Computer Vision Fall 2021
 
-The goal of this project is to mitigate the negative effects of back-lighting on videos or photos of people. 
+The goal of this project is to mitigate the negative effects of backlighting on videos or photos of people. 
 
 `Zoom_Backlight_Experiment.ipynb` contains the code I used to develop my pipeline and experiment with different methods. This is where the bulk of the code is.
 
