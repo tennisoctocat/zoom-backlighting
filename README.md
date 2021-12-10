@@ -3,7 +3,7 @@
 
 The goal of this project is to mitigate the negative effects of back-lighting on videos or photos of people. 
 
-`Zoom_Backlight_Experiment.ipynb` contains the code I used to develop my pipeline and experiment with different methods. 
+`Zoom_Backlight_Experiment.ipynb` contains the code I used to develop my pipeline and experiment with different methods. This is where the bulk of the code is.
 
 `VisionDataAnalysis.ipynb` contains the code I used to evaluate my models using the data from my survey.
 
