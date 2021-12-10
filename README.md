@@ -1,5 +1,4 @@
 # Reducing Zoom Backlighting
-## Computer Vision Fall 2021
 
 The goal of this project is to mitigate the negative effects of backlighting on videos or photos of people. 
 
